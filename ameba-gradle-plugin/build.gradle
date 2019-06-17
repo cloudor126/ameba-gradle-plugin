@@ -1,0 +1,51 @@
+plugins {
+  id "java-gradle-plugin"
+  id "com.jfrog.bintray" version "1.8.4"
+  id "com.gradle.plugin-publish" version "0.10.1"
+}
+version = "1.0.0"
+group = "cn.com.agree.gradle"
+description = "A gradle plugin for Agree Ameba projects"
+
+gradlePlugin {
+    plugins {
+        amebaGradlePlugin {
+            id = 'cn.com.agree.gradle.ameba-gradle-plugin'
+            implementationClass = 'cn.com.agree.gradle.ameba.AmebaGradlePlugin'
+        }
+    }
+}
+
+bintray {
+    user = property('com.bintray.user')
+    key = property('com.bintray.key')
+    publications = ['PluginMaven'] 
+    pkg {
+        repo = 'agree'
+        name = project.name
+        //userOrg = 'bintray_user'
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/cloudor-126/ameba-gradle-plugin.git'
+        version {
+	        name = project.version
+	        released  = new Date()
+	        //desc = project.description
+	        //vcsTag = 'T1.0.0'
+	        //attributes = ['gradle-plugin': 'com.use.less:com.use.less.gradle:gradle-useless-plugin']
+    	}
+    }
+}
+
+pluginBundle {
+  website = 'https://github.com/cloudor126/ameba-gradle-plugin'
+  vcsUrl = 'https://github.com/cloudor126/ameba-gradle-plugin.git'
+  description = project.description
+  tags = []
+
+  plugins {
+    amebaGradlePlugin {
+      // id is captured from java-gradle-plugin configuration
+      displayName = 'Ameba Gradle Plugin'
+    }
+  }
+}

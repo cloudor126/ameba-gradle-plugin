@@ -10,9 +10,11 @@ package cn.com.agree.gradle.ameba;
  */
 public class AmebaModel {
 
-	private String gradleTxt;
-
 	private String buildshipTxt;
+
+	private String gradleTxt;
+	
+	private boolean withPde;
 
 	/**
 	 * @return the buildshipTxt
@@ -20,6 +22,21 @@ public class AmebaModel {
 	public String getBuildshipTxt() {
 		return buildshipTxt==null?"connection.project.dir=..\r\neclipse.preferences.version=1":buildshipTxt;
 	}
+
+    /**
+	 * @return the gradleTxt
+	 */
+	public String getGradleTxt() {
+		return gradleTxt;
+	}
+
+    /**
+     * @return the withPde
+     */
+    public boolean isWithPde()
+    {
+        return withPde;
+    }
 
 	/**
 	 * @param buildshipTxt
@@ -30,18 +47,19 @@ public class AmebaModel {
 	}
 
 	/**
-	 * @return the gradleTxt
-	 */
-	public String getGradleTxt() {
-		return gradleTxt;
-	}
-
-	/**
 	 * @param gradleTxt
 	 *                      the gradleTxt to set
 	 */
 	public void setGradleTxt(String gradleTxt) {
 		this.gradleTxt = gradleTxt;
 	}
+
+	/**
+     * @param withPde the withPde to set
+     */
+    public void setWithPde(boolean withPde)
+    {
+        this.withPde = withPde;
+    }
 
 }

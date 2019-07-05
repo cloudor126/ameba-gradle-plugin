@@ -118,13 +118,28 @@ public class AmebaGradlePlugin implements Plugin<Project>
                     //@formatter:off
                     "Manifest-Version: 1.0\r\n" + 
                     "Bundle-ManifestVersion: 2\r\n" + 
-                    "Bundle-Name: "+project.getDisplayName()+"\r\n" + 
+                    "Bundle-Name: "+project.getName()+"\r\n" + 
                     "Bundle-SymbolicName: "+project.getName()+";singleton:=true\r\n" + 
                     "Bundle-Version: "+project.getVersion()+"\r\n" + 
                     "Automatic-Module-Name: "+project.getName()+"\r\n" + 
-                    "Bundle-RequiredExecutionEnvironment: JavaSE-1.8"
+                    "Bundle-RequiredExecutionEnvironment: JavaSE-1.8\r\n"
                     //@formatter:on
                     ;
+                    // export package
+                    StringBuilder sb = new StringBuilder();
+                    JavaPluginConvention java = project.getConvention().getPlugin(JavaPluginConvention.class);
+                    for (File dir : java.getSourceSets().getByName("main").getJava().getSrcDirs())
+                    {
+                        for (String pack : searchJavaPackages(dir, null))
+                        {
+                            sb.append(pack).append(',');
+                        }
+                    }
+                    if (sb.length() > 0)
+                    {
+                        sb.setLength(sb.length() - 1);
+                        content += "Export-Package: " + sb + "\r\n";
+                    }
                     out.write(content.getBytes("utf8"));
                 } catch (Exception e)
                 {
@@ -154,9 +169,10 @@ public class AmebaGradlePlugin implements Plugin<Project>
                 if (task.getName().equals("bootJar"))
                 {
                     task.getArchiveClassifier().set("bootJar");
-                }else
+                } else
                 {
-                    task.doFirst((t)->{
+                    task.doFirst((t) ->
+                    {
                         if (project.file("plugin.xml").exists())
                         {
                             task.from("plugin.xml");
@@ -164,7 +180,7 @@ public class AmebaGradlePlugin implements Plugin<Project>
                         Attributes attributes = task.getManifest().getAttributes();
                         attributes.putIfAbsent("Bundle-ManifestVersion", 2);
                         attributes.putIfAbsent("Bundle-Name", project.getName());
-                        attributes.putIfAbsent("Bundle-SymbolicName", project.getName());
+                        attributes.putIfAbsent("Bundle-SymbolicName", project.getName() + ";singleton:=true");
                         attributes.putIfAbsent("Bundle-Version", project.getVersion());
                         attributes.putIfAbsent("Automatic-Module-Name", project.getName());
                         attributes.putIfAbsent("Bundle-RequiredExecutionEnvironment", "JavaSE-1.8");

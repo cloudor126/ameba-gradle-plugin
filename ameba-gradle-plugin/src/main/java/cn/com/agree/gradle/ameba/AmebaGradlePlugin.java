@@ -147,96 +147,98 @@ public class AmebaGradlePlugin implements Plugin<Project>
     {
         project.afterEvaluate((p) ->
         {
-            p.getTasks().withType(Jar.class, (task) ->{
-                task.getInputs().files("plugin.xml","META-INF/MANIFEST.MF");
-            });
-            p.getTasks().withType(Jar.class, (task) -> task.doFirst((t) ->
+            p.getTasks().withType(Jar.class, (task) ->
             {
-                if (task.getName().equals("bootJar"))// not for bootJar
+                task.setEnabled(true);
+                task.getInputs().files("plugin.xml", "META-INF/MANIFEST.MF");
+                if (task.getName().equals("bootJar"))
                 {
-                    return;
-                }
-                if (project.file("plugin.xml").exists())
+                    task.getArchiveClassifier().set("bootJar");
+                }else
                 {
-                    task.from("plugin.xml");
-                }
-                Attributes attributes = task.getManifest().getAttributes();
-                attributes.putIfAbsent("Bundle-ManifestVersion", 2);
-                attributes.putIfAbsent("Bundle-Name", project.getName());
-                attributes.putIfAbsent("Bundle-SymbolicName", project.getName());
-                attributes.putIfAbsent("Bundle-Version", project.getVersion());
-                attributes.putIfAbsent("Automatic-Module-Name", project.getName());
-                attributes.putIfAbsent("Bundle-RequiredExecutionEnvironment", "JavaSE-1.8");
-                // require bundle
-                if (!attributes.containsKey("Require-Bundle"))
-                {
-                    StringBuilder sb = new StringBuilder();
-                    // add from gradle dependency
-                    Set<String> addedBundleName = new HashSet<String>();
-                    ResolvedConfiguration rc = project.getConfigurations().getByName("runtimeClasspath")
-                            .getResolvedConfiguration();
-                    rc.getFirstLevelModuleDependencies().forEach((rd) -> rd.getModuleArtifacts().forEach((a) ->
-                    {
-                        String bundleInfo = findBundleInfo(project, a.getFile());
-                        if (bundleInfo != null)
+                    task.doFirst((t)->{
+                        if (project.file("plugin.xml").exists())
                         {
-                            sb.append(bundleInfo).append(',');
-                            addedBundleName.add(bundleInfo.split(";")[0]);
+                            task.from("plugin.xml");
                         }
-                    }));
-                    // add from pde denpendency
-                    File file = project.file("META-INF/MANIFEST.MF");
-                    if (file.exists())
-                    {
-                        try (InputStream in = new FileInputStream(file))
+                        Attributes attributes = task.getManifest().getAttributes();
+                        attributes.putIfAbsent("Bundle-ManifestVersion", 2);
+                        attributes.putIfAbsent("Bundle-Name", project.getName());
+                        attributes.putIfAbsent("Bundle-SymbolicName", project.getName());
+                        attributes.putIfAbsent("Bundle-Version", project.getVersion());
+                        attributes.putIfAbsent("Automatic-Module-Name", project.getName());
+                        attributes.putIfAbsent("Bundle-RequiredExecutionEnvironment", "JavaSE-1.8");
+                        // require bundle
+                        if (!attributes.containsKey("Require-Bundle"))
                         {
-                            Manifest mf = new Manifest(in);
-                            java.util.jar.Attributes attrs = mf.getMainAttributes();
-                            String requireBundle = attrs.getValue("Require-Bundle");
-                            if (requireBundle != null)
+                            StringBuilder sb = new StringBuilder();
+                            // add from gradle dependency
+                            Set<String> addedBundleName = new HashSet<String>();
+                            ResolvedConfiguration rc = project.getConfigurations().getByName("runtimeClasspath")
+                                    .getResolvedConfiguration();
+                            rc.getFirstLevelModuleDependencies().forEach((rd) -> rd.getModuleArtifacts().forEach((a) ->
                             {
-                                for (String seg : requireBundle.split(","))
+                                String bundleInfo = findBundleInfo(project, a.getFile());
+                                if (bundleInfo != null)
                                 {
-                                    String name = seg.split(";")[0];
-                                    if (!addedBundleName.contains(name))
+                                    sb.append(bundleInfo).append(',');
+                                    addedBundleName.add(bundleInfo.split(";")[0]);
+                                }
+                            }));
+                            // add from pde denpendency
+                            File file = project.file("META-INF/MANIFEST.MF");
+                            if (file.exists())
+                            {
+                                try (InputStream in = new FileInputStream(file))
+                                {
+                                    Manifest mf = new Manifest(in);
+                                    java.util.jar.Attributes attrs = mf.getMainAttributes();
+                                    String requireBundle = attrs.getValue("Require-Bundle");
+                                    if (requireBundle != null)
                                     {
-                                        sb.append(seg).append(',');
-                                        addedBundleName.add(name);
+                                        for (String seg : requireBundle.split(","))
+                                        {
+                                            String name = seg.split(";")[0];
+                                            if (!addedBundleName.contains(name))
+                                            {
+                                                sb.append(seg).append(',');
+                                                addedBundleName.add(name);
+                                            }
+                                        }
                                     }
+                                } catch (Exception e)
+                                {
+                                    throw new RuntimeException(e);
                                 }
                             }
-                        } catch (Exception e)
-                        {
-                            throw new RuntimeException(e);
+                            // set
+                            if (sb.length() > 0)
+                            {
+                                sb.setLength(sb.length() - 1);
+                                attributes.putIfAbsent("Require-Bundle", sb.toString());
+                            }
                         }
-                    }
-                    // set
-                    if (sb.length() > 0)
-                    {
-                        sb.setLength(sb.length() - 1);
-                        attributes.putIfAbsent("Require-Bundle", sb.toString());
-                    }
-                }
-                // export package
-                if (!attributes.containsKey("Export-Package"))
-                {
-                    StringBuilder sb = new StringBuilder();
-                    JavaPluginConvention java = project.getConvention().getPlugin(JavaPluginConvention.class);
-                    for (File dir : java.getSourceSets().getByName("main").getJava().getSrcDirs())
-                    {
-                        for (String pack : searchJavaPackages(dir, null))
+                        // export package
+                        if (!attributes.containsKey("Export-Package"))
                         {
-                            sb.append(pack).append(',');
+                            StringBuilder sb = new StringBuilder();
+                            JavaPluginConvention java = project.getConvention().getPlugin(JavaPluginConvention.class);
+                            for (File dir : java.getSourceSets().getByName("main").getJava().getSrcDirs())
+                            {
+                                for (String pack : searchJavaPackages(dir, null))
+                                {
+                                    sb.append(pack).append(',');
+                                }
+                            }
+                            if (sb.length() > 0)
+                            {
+                                sb.setLength(sb.length() - 1);
+                                attributes.putIfAbsent("Export-Package", sb.toString());
+                            }
                         }
-                    }
-                    if (sb.length() > 0)
-                    {
-                        sb.setLength(sb.length() - 1);
-                        attributes.putIfAbsent("Export-Package", sb.toString());
-                    }
+                    });
                 }
-            }));
-
+            });
         });
     }
 

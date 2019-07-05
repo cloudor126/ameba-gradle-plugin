@@ -5,7 +5,7 @@ A gradle plugin for Agree Ameba projects
 ```
 allprojects {
     group = 'cn.com.agree'
-    version = '1.0.1'
+    version = '1.0.0'
 }
 
 
@@ -20,7 +20,7 @@ buildscript {
 
 	dependencies {
 		classpath "org.springframework.boot:spring-boot-gradle-plugin:$VERSION_SPRING_BOOT"
-		classpath "cn.com.agree.gradle:ameba-gradle-plugin:1.0.1"
+		classpath "cn.com.agree.gradle:ameba-gradle-plugin:1.0.2"
 	}
 }
 

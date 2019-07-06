@@ -27,6 +27,8 @@ buildscript {
 subprojects{
 	apply plugin: 'cn.com.agree.gradle.ameba-gradle-plugin'
 	
+	// version = rootProject.version + new Date().format('.yyyyMMdd_HHmm')
+	
 	// 仓库设置
 	repositories {
         mavenCentral()

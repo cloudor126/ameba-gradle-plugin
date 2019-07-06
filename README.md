@@ -11,10 +11,10 @@ allprojects {
 
 buildscript {
 	ext{
-		VERSION_SPRING_BOOT = "2.1.5.RELEASE"
+		VERSION_SPRING_BOOT = "2.1.6.RELEASE"
 	}
 	repositories {
-		maven { url 'https://repo.spring.io/libs-snapshot' }
+		jcenter()
 		maven { url 'https://dl.bintray.com/cloudor/agree'}
 	}
 

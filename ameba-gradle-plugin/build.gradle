@@ -41,7 +41,7 @@ pluginBundle {
   website = 'https://github.com/cloudor126/ameba-gradle-plugin'
   vcsUrl = 'https://github.com/cloudor126/ameba-gradle-plugin.git'
   description = project.description
-  tags = []
+  tags = ['eclipse','agree','ameba']
 
   plugins {
     amebaGradlePlugin {

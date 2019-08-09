@@ -153,6 +153,14 @@ public class AmebaGradlePlugin implements Plugin<Project>
             eclipse.getProject().buildCommand("org.eclipse.pde.SchemaBuilder");
             eclipse.getClasspath().containers("org.eclipse.pde.core.requiredPlugins");
         });
+        project.afterEvaluate((p) ->
+        {
+            if (ameba.isWithPde())
+            {
+                EclipseModel eclipse = p.getExtensions().getByType(EclipseModel.class);
+                eclipse.getClasspath().containers("org.eclipse.pde.core.requiredPlugins");
+            }
+        });
     }
 
     /**

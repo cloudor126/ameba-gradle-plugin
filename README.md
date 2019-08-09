@@ -15,12 +15,11 @@ buildscript {
 	}
 	repositories {
 		jcenter()
-		maven { url 'https://dl.bintray.com/cloudor/agree'}
 	}
 
 	dependencies {
 		classpath "org.springframework.boot:spring-boot-gradle-plugin:$VERSION_SPRING_BOOT"
-		classpath "cn.com.agree.gradle:ameba-gradle-plugin:1.0.3"
+		classpath "cn.com.agree.gradle:ameba-gradle-plugin:1.0.6"
 	}
 }
 

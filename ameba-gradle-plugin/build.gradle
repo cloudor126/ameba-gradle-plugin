@@ -1,9 +1,10 @@
 plugins {
   id "java-gradle-plugin"
+  id 'maven-publish'
   id "com.jfrog.bintray" version "1.8.4"
   id "com.gradle.plugin-publish" version "0.10.1"
 }
-version = "1.0.4"
+version = "1.0.6"
 group = "cn.com.agree.gradle"
 description = "A gradle plugin for Agree Ameba projects"
 
@@ -19,7 +20,7 @@ gradlePlugin {
 bintray {
     user = property('com.bintray.user')
     key = property('com.bintray.key')
-    publications = ['PluginMaven'] 
+    publications = ['myPlugin'] 
     pkg {
         repo = 'agree'
         name = project.name
@@ -48,4 +49,18 @@ pluginBundle {
       displayName = 'Ameba Gradle Plugin'
     }
   }
+}
+
+task packageSources(type: Jar, dependsOn: 'classes') {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+publishing{
+	publications {
+        myPlugin(MavenPublication) {
+            artifact jar
+            artifact packageSources
+        }
+    }
 }

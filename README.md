@@ -15,13 +15,13 @@ allprojects {
 }
 
 subprojects{
-	apply plugin: 'cn.com.agree.gradle.ameba-gradle-plugin'
+    apply plugin: 'cn.com.agree.gradle.ameba-gradle-plugin'
 	
-	// version = rootProject.version + new Date().format('.yyyyMMdd_HHmm')
+    // version = rootProject.version + new Date().format('.yyyyMMdd_HHmm')
 	
-	// 仓库设置
-	repositories {
-        mavenCentral()
+    // 仓库设置
+    repositories {
+        jcenter()
     }
 
     // 不使用alpha和beta版本，例如grovvy-3.0.0-alpha、junit-4.13-beta-2

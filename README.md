@@ -3,24 +3,15 @@ A gradle plugin for Agree Ameba projects
 
 # Example
 ```
+plugins{
+    id 'cn.com.agree.gradle.ameba-gradle-plugin' version '1.0.6' apply false
+    id 'org.springframework.boot' version '2.1.7.RELEASE' apply false
+}
+
 allprojects {
     group = 'cn.com.agree'
     version = '1.0.0'
-}
-
-
-buildscript {
-	ext{
-		VERSION_SPRING_BOOT = "2.1.6.RELEASE"
-	}
-	repositories {
-		jcenter()
-	}
-
-	dependencies {
-		classpath "org.springframework.boot:spring-boot-gradle-plugin:$VERSION_SPRING_BOOT"
-		classpath "cn.com.agree.gradle:ameba-gradle-plugin:1.0.6"
-	}
+    ext.VERSION_SPRING_BOOT = '2.1.7.RELEASE'
 }
 
 subprojects{
